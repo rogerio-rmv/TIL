@@ -24,6 +24,7 @@ public class Startup
         services.AddTransient<ICategoriaRepository, CategoriaRepository>();
         #endregion
 
+
         services.AddControllersWithViews();
     }
 
