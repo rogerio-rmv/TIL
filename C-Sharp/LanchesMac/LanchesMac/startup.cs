@@ -24,8 +24,13 @@ public class Startup
         services.AddTransient<ICategoriaRepository, CategoriaRepository>();
         #endregion
 
-
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddControllersWithViews();
+
+        #region "Serviços de Sessão"
+        services.AddMemoryCache();
+        services.AddSession();
+        #endregion
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,6 +50,7 @@ public class Startup
         app.UseStaticFiles();
 
         app.UseRouting();
+        app.UseSession();
 
         app.UseAuthorization();
 
