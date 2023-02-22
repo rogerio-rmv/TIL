@@ -1,4 +1,5 @@
 ﻿using LanchesMac.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace LanchesMac.Models
 {
@@ -37,16 +38,13 @@ namespace LanchesMac.Models
 
         public void AdicionarAoCarrinho(Lanche lanche)
         {
-            // Obtém o item do carrinho conforme o id do carrinho (guid) e o lanche informado
-            var carrinhoCompraItem = _context.CarrinhoCompraItens.SingleOrDefault(
-                    l => l.Lanche.LancheId == lanche.LancheId &&
-                    l.CarrinhoCompraId == CarrinhoCompraId
-                );
+            CarrinhoCompraItem? carrinhoCompraItem = ObtemItemCarrinho(lanche);
 
             // Caso o lanche não tenha sido cadastrado para o carrinho,
             // cria um novo item para o carrinho de compras 
             // a partir do lanche informado e o id do carrinho
-            if(carrinhoCompraItem== null) {
+            if (carrinhoCompraItem == null)
+            {
                 carrinhoCompraItem = new CarrinhoCompraItem
                 {
                     CarrinhoCompraId = CarrinhoCompraId,
@@ -68,6 +66,62 @@ namespace LanchesMac.Models
             _context.SaveChanges();
         }
 
+        public void RemoverDoCarrinho(Lanche lanche)
+        {
+            CarrinhoCompraItem? carrinhoCompraItem = ObtemItemCarrinho(lanche);
+
+            if(carrinhoCompraItem != null)
+            {
+                if(carrinhoCompraItem.Quantidade > 1)
+                {
+                    carrinhoCompraItem.Quantidade--;
+                }
+            }
+            else
+            {
+                _context.CarrinhoCompraItens.Remove(carrinhoCompraItem);
+            }
+
+            _context.SaveChanges();
+        }
+
+
+        private CarrinhoCompraItem? ObtemItemCarrinho(Lanche lanche)
+        {
+            // Obtém o item do carrinho conforme o id do carrinho (guid) e o lanche informado
+            return _context.CarrinhoCompraItens.SingleOrDefault(
+                    l => l.Lanche.LancheId == lanche.LancheId &&
+                    l.CarrinhoCompraId == CarrinhoCompraId
+                );
+        }
+
+        public List<CarrinhoCompraItem> GetCarrinhoCompraItens()
+        {
+            return CarrinhoCompraItens ??
+                   (
+                       CarrinhoCompraItens = _context.CarrinhoCompraItens
+                       .Where(c => c.CarrinhoCompraId == CarrinhoCompraId)
+                       .Include(s => s.Lanche)
+                       .ToList()
+                   );
+        }
+
+        public void LimparCarrinho()
+        {
+            var carrinhoItens = _context.CarrinhoCompraItens
+                                        .Where(carrinho => carrinho.CarrinhoCompraId == CarrinhoCompraId);
+
+            _context.CarrinhoCompraItens.RemoveRange(carrinhoItens);
+            _context.SaveChanges();
+        }
+
+        public decimal GetCarrinhoCompraTotal()
+        {
+            var total = _context.CarrinhoCompraItens
+                                .Where(c => c.CarrinhoCompraId == CarrinhoCompraId)
+                                .Select(c => c.Lanche.Preco * c.Quantidade).Sum();
+            return total;
+        }
 
     }
 }

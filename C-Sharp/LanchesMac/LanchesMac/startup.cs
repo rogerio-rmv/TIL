@@ -1,4 +1,5 @@
 ﻿using LanchesMac.Context;
+using LanchesMac.Models;
 using LanchesMac.Repositories;
 using LanchesMac.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,11 @@ public class Startup
         services.AddTransient<ICategoriaRepository, CategoriaRepository>();
         #endregion
 
+        #region "Injeção de Dependência"
+        services.AddScoped(serivceProvider => CarrinhoCompra.GetCarrinho(serivceProvider));
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        #endregion
+
         services.AddControllersWithViews();
 
         #region "Serviços de Sessão"
