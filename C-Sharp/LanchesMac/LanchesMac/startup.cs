@@ -23,6 +23,7 @@ public class Startup
         #region "Injeção de Dependência - Repository"
         services.AddTransient<ILancheRepository, LancheRepository>();
         services.AddTransient<ICategoriaRepository, CategoriaRepository>();
+        services.AddTransient<IPedidoRepository, PedidoRepository>();
         #endregion
 
         #region "Injeção de Dependência"

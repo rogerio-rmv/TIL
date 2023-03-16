@@ -25,7 +25,7 @@ namespace LanchesMac.Repositories
         {
                return _context.Lanches
                               .Include(lanches => lanches.Categoria)
-                              .FirstOrDefault(lanches => lanches.LancheId == LancheId, new Lanche());
+                              .FirstOrDefault(lanches => lanches.LancheId == LancheId);
         }
     }
 }
