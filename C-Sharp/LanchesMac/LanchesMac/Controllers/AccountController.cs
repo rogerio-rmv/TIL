@@ -16,7 +16,7 @@ namespace LanchesMac.Controllers
             _signInManager = signInManager;
         }
 
-        public IActionResult Login(string returnUrl)
+        public IActionResult Login(string? returnUrl)
         {
             return View(new LoginViewModel()
             {
@@ -56,6 +56,7 @@ namespace LanchesMac.Controllers
             return View();
         }
 
+        [HttpPost]
         public async Task<IActionResult> Register(LoginViewModel registroViewModel)
         {
             if (ModelState.IsValid)
@@ -73,6 +74,15 @@ namespace LanchesMac.Controllers
                 }
             }
             return View(registroViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Session.Clear();
+            HttpContext.User = null;
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
 
     }

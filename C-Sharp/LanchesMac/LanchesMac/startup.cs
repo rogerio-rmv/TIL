@@ -25,6 +25,23 @@ public class Startup
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
+
+        // -----------------------------------------------
+        // Sobrescrita do método padrão da configuração da 
+        // configuração do nível de segurança
+        // -----------------------------------------------
+        // Configura o nível de complexidade da senha
+        // gerada no cadastro de usuário
+        // -----------------------------------------------
+        services.Configure<IdentityOptions>(options => {
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequiredLength = 6;
+            options.Password.RequiredUniqueChars = 1;
+        });
+
         #region "Injeção de Dependência - Repository"
         services.AddTransient<ILancheRepository, LancheRepository>();
         services.AddTransient<ICategoriaRepository, CategoriaRepository>();
