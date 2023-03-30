@@ -2,6 +2,7 @@
 using LanchesMac.Models;
 using LanchesMac.Repositories;
 using LanchesMac.Repositories.Interfaces;
+using LanchesMac.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,6 +49,20 @@ public class Startup
         services.AddTransient<IPedidoRepository, PedidoRepository>();
         #endregion
 
+        #region "Roles"
+        services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
+
+        services.AddAuthorization(options => 
+        {
+            options.AddPolicy("Admin",
+                politica =>
+                {
+                    politica.RequireRole("Admin");
+                });
+        });
+        #endregion
+
+
         #region "Injeção de Dependência"
         services.AddScoped(serivceProvider => CarrinhoCompra.GetCarrinho(serivceProvider));
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -62,7 +77,8 @@ public class Startup
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, 
+        IWebHostEnvironment env, ISeedUserRoleInitial seedUserRoleInitial)
     {
         if (env.IsDevelopment())
         {
@@ -78,13 +94,24 @@ public class Startup
         app.UseStaticFiles();
 
         app.UseRouting();
+
+        seedUserRoleInitial.SeedRoles();
+        seedUserRoleInitial.SeedUsers();
+
         app.UseSession();
 
+        //Crias os perfis
         app.UseAuthentication();
+        //Cria os usuários e vincula aos perfis
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapControllerRoute(
+              name: "areas",
+              pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}"
+            );
+
             endpoints.MapControllerRoute(
                 name: "categoriaFiltro",
                 pattern: "Lanche/{action}/{categoria?}",
