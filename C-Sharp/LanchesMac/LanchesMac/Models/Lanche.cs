@@ -47,6 +47,7 @@ namespace LanchesMac.Models
         #endregion
 
         #region "Atributos de relacionamento com Categoria"
+        [Display(Name = "Categoria")]
         public int CategoriaId { get; set; } // Atributo chave-estrangeira
         public virtual Categoria? Categoria { get; set; } // Relacionamento com Categoria ( 1 para 1 )
         #endregion
