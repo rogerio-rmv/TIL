@@ -28,6 +28,7 @@ public class Startup
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
+        services.Configure<ConfigurationImagens>(Configuration.GetSection("ConfigurationPastaImagens"));
 
         // -----------------------------------------------
         // Sobrescrita do método padrão da configuração da 
