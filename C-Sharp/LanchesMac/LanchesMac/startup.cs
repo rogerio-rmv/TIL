@@ -52,9 +52,9 @@ public class Startup
         services.AddTransient<IPedidoRepository, PedidoRepository>();
         #endregion
 
-        #region "Roles"
         services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
         services.AddScoped<RelatorioVendasService>();
+        services.AddScoped<GraficoVendasService>();
 
         services.AddAuthorization(options => 
         {
@@ -64,7 +64,6 @@ public class Startup
                     politica.RequireRole("Admin");
                 });
         });
-        #endregion
 
 
         #region "Injeção de Dependência"
