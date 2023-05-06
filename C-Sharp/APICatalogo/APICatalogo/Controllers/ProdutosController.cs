@@ -20,7 +20,7 @@ namespace APICatalogo.Controllers
         [HttpGet]
         public  ActionResult<IEnumerable<Produto>> Get()
         {
-            var produtos = _conext.Produtos.ToList();
+            var produtos = _conext.Produtos.AsNoTracking().ToList();
 
             if(produtos is null)
             {
@@ -33,7 +33,7 @@ namespace APICatalogo.Controllers
         [HttpGet("{id:int}", Name="ObterProduto")]
         public ActionResult<Produto> GetProduto(int id)
         {
-            var produto = _conext.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var produto = _conext.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
 
             if(produto is null)
             {
@@ -48,16 +48,16 @@ namespace APICatalogo.Controllers
         {
             if (produto is null)
                 return BadRequest();
-                  
+
             _conext.Produtos.Add(produto);
             _conext.SaveChanges();
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto); //retorna 201
         }
 
-        [HttpPut("id:int")]
+        [HttpPut("{id:int}")]
         public ActionResult Put(int id, Produto produto)
         {
-            if(id != produto.ProdutoId)
+            if (id != produto.ProdutoId)
             {
                 return BadRequest(); // retorna erro 400
             }
@@ -68,7 +68,7 @@ namespace APICatalogo.Controllers
             return Ok(produto);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
             if (id == 0)
